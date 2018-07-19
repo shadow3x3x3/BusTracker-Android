@@ -60,7 +60,7 @@ class LocationService : Service() {
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Request location permission
+            return START_STICKY
         }
 
         toast("Start Bus Tracker!")
@@ -91,7 +91,7 @@ class LocationService : Service() {
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Request location permission
+            return
         }
 
         locationCallback = object : LocationCallback() {
