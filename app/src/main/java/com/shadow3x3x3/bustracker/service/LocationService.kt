@@ -14,10 +14,18 @@ import android.os.IBinder
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.NotificationCompat
 import android.util.Log
-import com.google.android.gms.location.*
+import android.widget.Toast
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 import com.shadow3x3x3.bustracker.R
 
+fun Context.toast(text: String) = Toast.makeText(this, text, Toast.LENGTH_LONG).show()
+
 class LocationService : Service() {
+
+    private var isRunning = false
 
     private val fusedLocationClient by lazy {
         LocationServices.getFusedLocationProviderClient(this)
@@ -45,11 +53,17 @@ class LocationService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(SERVICE_TAG, "onStartCommand")
 
+        if (isRunning) {
+            return START_STICKY
+        }
+
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Request location permission
         }
+
+        toast("Start Bus Tracker!")
 
         fusedLocationClient.lastLocation.addOnSuccessListener { location : Location ->
             Log.d(SERVICE_TAG, "Location: ${location.longitude}, ${location.latitude}")
@@ -58,11 +72,14 @@ class LocationService : Service() {
 
         startLocationUpdates()
 
+        isRunning = true
+
         return START_STICKY
     }
 
     override fun onDestroy() {
         Log.d(SERVICE_TAG, "onDestroy")
+        isRunning = false
         super.onDestroy()
     }
 
