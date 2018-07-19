@@ -15,11 +15,15 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.app.NotificationCompat
 import android.util.Log
 import android.widget.Toast
+import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.android.extension.responseJson
+import com.google.android.gms.common.api.ResultTransform
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.shadow3x3x3.bustracker.R
+import org.json.JSONObject
 
 fun Context.toast(text: String) = Toast.makeText(this, text, Toast.LENGTH_LONG).show()
 
@@ -113,6 +117,21 @@ class LocationService : Service() {
     }
 
     private fun createNotification(contextText: String) {
+        val json = JSONObject()
+        json.put("title", "foo")
+        json.put("body", "bar")
+        json.put("userId", "1")
+
+        Fuel.post("https://jsonplaceholder.typicode.com/posts")
+            .body(json.toString())
+            .responseJson { _, _, result ->
+            result.fold(
+                success = { json -> Log.d(SERVICE_TAG, json.toString()) },
+                failure = { error -> Log.d(SERVICE_TAG, error.toString()) }
+            )
+        }
+
+
         val notification = buildNotification(contextText)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
